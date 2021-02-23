@@ -1,0 +1,303 @@
+mcp2210-spi.c:		return cmd->spi_in_flight && cmd->spi->chip_select == pin;
+mcp2210-spi.c:	cmd->head.can_retry = 1;
+mcp2210-spi.c:	cmd->head.complete = spi_complete_cmd;
+mcp2210-spi.c:	cmd->head.context = NULL;
+mcp2210-spi.c:	cmd->spi = msg->spi;
+mcp2210-spi.c:	cmd->msg = msg;
+mcp2210-spi.c:	cmd->xfer = first_xfer;
+mcp2210-spi.c:	cmd->head.non_preemptable = 1;
+mcp2210-spi.c:	cmd->pos = 0;
+mcp2210-spi.c:	cmd->pending_unacked = 0;
+mcp2210-spi.c:	cmd->pending_unacked = 0;
+mcp2210-spi.c:	cmd->pending_bytes = 0;
+mcp2210-spi.c:	cmd->busy_count = 0
+mcp2210-spi.c:	cmd->spi_in_flight = 0
+mcp2210-spi.c:	cmd->ctl_cmd = NULL;
+mcp2210-spi.c:	ret = mcp2210_add_cmd(&cmd->head, true);
+mcp2210-spi.c:	struct mcp2210_device *dev = cmd->head.dev;
+mcp2210-spi.c:	cmd->ctl_cmd = &dev->ctl_cmd;
+mcp2210-spi.c:	cmd->head.can_retry = 1;
+mcp2210-spi.c:	struct mcp2210_device *dev = cmd->head.dev;
+mcp2210-spi.c:	u8 pin = cmd->spi->chip_select;
+mcp2210-spi.c:	if (cmd->ctl_cmd)
+mcp2210-spi.c:	if (cmd->spi->mode | SPI_3WIRE) {
+mcp2210-spi.c:	calculate_spi_settings(&needed, dev, cmd->spi, cmd->msg, cmd->xfer, pin);
+mcp2210-spi.c:	/* TODO: still missing cmd->spi->mode & (~(SPI_MODE_3 | SPI_CS_HIGH)) */
+mcp2210-spi.c:	pin = cmd->spi->chip_select;
+mcp2210-spi.c:	if (cmd->spi_in_flight)
+mcp2210-spi.c:		BUG_ON(cmd->ctl_cmd);
+mcp2210-spi.c:		/* cmd->ctl_cmd will be non-null if we're submitting a control
+mcp2210-spi.c:		if (ret || cmd->ctl_cmd)
+mcp2210-spi.c:	xfer = cmd->xfer;
+mcp2210-spi.c:	    && cmd->pos + cmd->pending_bytes == 0 && dump_spi) {
+mcp2210-spi.c:			 dev_name(&cmd->spi->dev));
+mcp2210-spi.c:	if (cmd->pos + cmd->pending_bytes < xfer->len) {
+mcp2210-spi.c:		len = xfer->len - cmd->pos - cmd->pending_bytes;
+mcp2210-spi.c:		if (len > MCP2210_BUFFER_SIZE - cmd->pending_bytes) {
+mcp2210-spi.c:			len = MCP2210_BUFFER_SIZE - cmd->pending_bytes;
+mcp2210-spi.c:			? xfer->tx_buf + cmd->pos + cmd->pending_bytes
+mcp2210-spi.c:		cmd->pending_unacked = len;
+mcp2210-spi.c:		cmd->pending_bytes  += len;
+mcp2210-spi.c:	mcp2210_debug("len: %u, cmd->pending_bytes: %hu\n", len,
+mcp2210-spi.c:		      cmd->pending_bytes);
+mcp2210-spi.c:	cmd->spi_in_flight = 1;
+mcp2210-spi.c:	cmd->head.can_retry = 0;
+mcp2210-spi.c:	struct mcp2210_device *dev = cmd->head.dev;
+mcp2210-spi.c:	struct mcp2210_cmd *cc = &cmd->ctl_cmd->head;
+mcp2210-spi.c:	cmd->ctl_cmd = NULL;
+mcp2210-spi.c:	u8 pin = cmd->spi->chip_select;
+mcp2210-spi.c:	if(cmd->ctl_cmd) {
+mcp2210-spi.c:	if (cmd->pending_bytes < len) {
+mcp2210-spi.c:	cmd->pending_bytes -= len;
+mcp2210-spi.c:	cmd->pending_unacked = 0;
+mcp2210-spi.c:	//mcp2210_debug("len: %hhu, cmd->pending_bytes: %hu, URB duration %uus (%lu jiffies)\n", len, cmd->pending_bytes, jiffies_to_usecs(urb_duration), urb_duration);
+mcp2210-spi.c:	//dump_msg(cmd->head.dev, KERN_DEBUG, "SPI response: ", rep);
+mcp2210-spi.c:	xfer = cmd->xfer;
+mcp2210-spi.c:		if (unlikely(cmd->pos + len > xfer->len)) {
+mcp2210-spi.c:			memcpy(xfer->rx_buf + cmd->pos, rep->body.raw,
+mcp2210-spi.c:		cmd->pos += len;
+mcp2210-spi.c:		cmd->msg->actual_length += len;
+mcp2210-spi.c:	if(cmd->pos == xfer->len) {
+mcp2210-spi.c:		BUG_ON(cmd->pending_bytes != 0); /* sanity check */
+mcp2210-spi.c:				 dev_name(&cmd->spi->dev));
+mcp2210-spi.c:		/* if cs_change, then clearing cmd->spi_in_flight will trigger
+mcp2210-spi.c:			dev->spi_in_flight = cmd->spi_in_flight = 0;
+mcp2210-spi.c:				 &cmd->msg->transfers)) {
+mcp2210-spi.c:			dev->spi_in_flight = cmd->spi_in_flight = 0;
+mcp2210-spi.c:			cmd->msg->status = cmd->head.status = 0;
+mcp2210-spi.c:		cmd->pos = 0;
+mcp2210-spi.c:		cmd->pending_bytes = 0;
+mcp2210-spi.c:		cmd->busy_count = 0;
+mcp2210-spi.c:		cmd->ctl_cmd = NULL;
+mcp2210-spi.c:	} else if (cmd->pending_bytes >= pending_bytes_wait_threshold) {
+mcp2210-spi.c:		mcp2210_debug("cmd->pending_bytes: %u @ %uHz\n", cmd->pending_bytes, dev->s.spi_settings.bitrate);
+mcp2210-spi.c:		expected_time_usec = cmd->pending_bytes
+mcp2210-spi.c:						&cmd->msg->transfers)) {
+mcp2210-spi.c:		cmd->head.delay_until = now + usecs_to_jiffies(expected_time_usec);
+mcp2210-spi.c:		cmd->head.delayed = 1;
+mcp2210-spi.c:		cmd->head.delayed = 0;
+mcp2210-spi.c:	struct mcp2210_device *dev = cmd->head.dev;
+mcp2210-spi.c:	BUG_ON(cmd->pending_unacked > cmd->pending_bytes);
+mcp2210-spi.c:	cmd->pending_bytes -= cmd->pending_unacked;
+mcp2210-spi.c:	cmd->pending_unacked = 0;
+mcp2210-spi.c:	if (cmd->head.mcp_status == MCP2210_STATUS_BUSY) {
+mcp2210-spi.c:		mcp2210_warn("cmd->busy_count %u\n", cmd->busy_count);
+mcp2210-spi.c:		++cmd->busy_count;
+mcp2210-spi.c:		if (cmd->busy_count < 64) {
+mcp2210-spi.c:			cmd->head.delay_until = jiffies + usecs_to_jiffies(750);
+mcp2210-spi.c:			cmd->head.delayed = 1;
+mcp2210-spi.c:		    cmd->head.mcp_status);
+mcp2210-spi.c:	struct spi_message *msg = cmd->msg;
+mcp2210-spi.c:	msg->status = cmd->head.status;
+mcp2210-spi.c:	spi_finalize_current_message(cmd->head.dev->spi_master);
+mcp2210-ioctl.c:		if (cmd->op == MCP2210_CMD_READ_EEPROM) {
+mcp2210-ioctl.c:			BUG_ON(cmd->addr + cmd->size > MCP2210_EEPROM_SIZE);
+mcp2210-ioctl.c:			BUG_ON(cmd->size != ide->size);
+mcp2210-ioctl.c://			mcp2210_debug("in my mind, ide: %p, ide->data: %p, cmd->addr: %hhu, cmd->size: %hu", ide, ide->data, cmd->addr, cmd->size);
+mcp2210-ioctl.c:			memcpy(ide->data, &dev->eeprom_cache[cmd->addr], cmd->size);
+mcp2210-ioctl.c:	cmd->head.complete = mcp2210_ioctl_complete;
+mcp2210-ioctl.c:	cmd->head.context = result;
+mcp2210-ioctl.c:		list_add_tail(&cmd->head.node, &cmds);
+mcp2210-ioctl.c:		list_add_tail(&cmd->head.node, &cmds);
+mcp2210-ioctl.c:		list_add_tail(&cmd->head.node, &cmds);
+mcp2210-ioctl.c:		list_add_tail(&cmd->head.node, &cmds);
+mcp2210-ioctl.c:		list_add_tail(&cmd->head.node, &cmds);
+mcp2210-ioctl.c:		cmd->nonatomic = 1;
+mcp2210-ioctl.c:		list_add_tail(&cmd->node, &cmds);
+mcp2210-ioctl.c:			list_del(&cmd->node);
+mcp2210-ioctl.c:			cmd->complete = mcp2210_ioctl_complete;
+mcp2210-ioctl.c:			cmd->context = result;
+mcp2210-ioctl.c:			list_add_tail(&cmd->node, &dev->cmd_queue);
+Binary file mcp2210-core.o matches
+mcp2210-irq.c:	if (cmd->req.cmd == MCP2210_CMD_GET_PIN_VALUE) {
+mcp2210-irq.c:	cmd->head.delayed = 1;
+mcp2210-irq.c:	cmd->head.delay_until = next;
+mcp2210-irq.c:	cmd->head.state = MCP2210_STATE_NEW;
+Binary file mcp2210.o matches
+user/mcp2210.c:	for (cmd = cmd_list; cmd->name; ++cmd) {
+user/mcp2210.c:		if (!strcmp(cmd->name, *argv)) {
+user/mcp2210.c:			if (argc < cmd->min_args) {
+user/mcp2210.c:				fprintf(stderr, "too few arguments supplied for command %s, expected %u, got %u\n", cmd->name, cmd->min_args, argc);
+user/mcp2210.c:			return cmd->sub_cmd
+user/mcp2210.c:			     ? dispatch(argc, argv, cmd->sub_cmd)
+user/mcp2210.c:			     : cmd->func(argc, argv);
+mcp2210-core.c: * Each populate the cmd->type with a pointer to an appropriate struct
+mcp2210-core.c: * cmd->complete and cmd->context to defer some work, possibly to execute in a
+mcp2210-core.c: * be delayed, its cmd->delayed bit is set and cmd->delay_until will specify a
+mcp2210-core.c: * to sleep, it's cmd->nonatomic bit will be set.
+mcp2210-core.c: * to execute prior to it.  Delayed commands who's cmd->delay_until time has
+mcp2210-core.c: * cmd->delay_until time has not yet arrived, it is moved to the
+mcp2210-core.c:	struct mcp2210_device *dev = cmd->dev;
+mcp2210-core.c:	if (cmd->head.status) {
+mcp2210-core.c:		ret = mcp2210_eeprom_read(dev, NULL, 0, cmd->size,
+mcp2210-core.c:	if (cmd->head.mcp_status) {
+mcp2210-core.c:			    cmd->head.mcp_status);
+mcp2210-core.c:	if (cmd->size == 4) {
+mcp2210-core.c:	} else if (cmd->size == 0x100) {
+mcp2210-core.c:		cmd->complete = creek_configure;
+mcp2210-core.c:		cmd->nonatomic = 1;
+mcp2210-core.c:	dev->cur_cmd->status = error;
+mcp2210-core.c:		if (cmd->complete) {
+mcp2210-core.c:			cmd->status = -ESHUTDOWN;
+mcp2210-core.c:			ret = cmd->complete(cmd, cmd->context);
+mcp2210-core.c:		if (time_after_eq(now, cmd->delay_until)) {
+mcp2210-core.c:			list_del(&cmd->node);
+mcp2210-core.c:			list_add(&cmd->node, &dev->cmd_queue);
+mcp2210-core.c:			cmd->delayed = 0;
+mcp2210-core.c:		} else if (!next || time_before(cmd->delay_until,
+mcp2210-core.c:	BUG_ON(!dev->cur_cmd || !dev->cur_cmd->delayed);
+mcp2210-core.c:	list_add_tail(&dev->cur_cmd->node, &dev->delayed_list);
+mcp2210-core.c:		BUG_ON(!cmd->delayed);
+mcp2210-core.c:		if (cmd->nonatomic) {
+mcp2210-core.c:				delay = jiffdiff(jiffies, cmd->delay_until);
+mcp2210-core.c:			mod_timer(&dev->timer, cmd->delay_until);
+mcp2210-core.c:	if (cmd && cmd->state >= MCP2210_STATE_COMPLETE) {
+mcp2210-core.c:		if (cmd->complete) {
+mcp2210-core.c:			if (cmd->nonatomic) {
+mcp2210-core.c:			ret = cmd->complete(cmd, cmd->context);
+mcp2210-core.c:			if (cmd->nonatomic)
+mcp2210-core.c:			dev->cur_cmd->time_started = jiffies;
+mcp2210-core.c:	if (cmd->repeat_count) {
+mcp2210-core.c:			     cmd, cmd->repeat_count);
+mcp2210-core.c:	if (cmd->state == MCP2210_STATE_NEW) {
+mcp2210-core.c:		if (cmd->delayed) {
+mcp2210-core.c:			long diff = jiffdiff(cmd->delay_until, cur_time);
+mcp2210-core.c:					     cmd->nonatomic ? "non-" : "",
+mcp2210-core.c:				if (cmd->non_preemptable) {
+mcp2210-core.c:			cmd->delayed = 0;
+mcp2210-core.c:		if (unlikely(cmd->nonatomic) && !can_sleep) {
+mcp2210-core.c:		if (!cmd->type) {
+mcp2210-core.c:			cmd->state = MCP2210_STATE_COMPLETE;
+mcp2210-core.c:				cmd->state = MCP2210_STATE_NEW;
+mcp2210-core.c:				cmd->state = MCP2210_STATE_COMPLETE;
+mcp2210-core.c:				cmd->status = 0;
+mcp2210-core.c:				cmd->state = MCP2210_STATE_DEAD;
+mcp2210-core.c:				cmd->status = ret;
+mcp2210-core.c:		cmd->state = MCP2210_STATE_SUBMITTED;
+mcp2210-core.c:	cmd->state = MCP2210_STATE_DEAD;
+mcp2210-core.c:	cmd->status = error;
+mcp2210-core.c:	cmd->mcp_status = mcp_error;
+mcp2210-core.c:	mcp2210_debug("cmd: %p, cmd->state: %d", cmd, cmd->state);
+mcp2210-core.c:				cmd->status = -EIO;
+mcp2210-core.c:	cmd->dev = dev;
+mcp2210-core.c:	cmd->type = type;
+mcp2210-core.c:	cmd->status = -EINPROGRESS;
+mcp2210-core.c:		cmd->node.next = LIST_POISON1;
+mcp2210-core.c:		cmd->node.prev = LIST_POISON2;
+mcp2210-core.c:	cmd->time_queued	= 0;
+mcp2210-core.c:	cmd->time_started	= 0;
+mcp2210-core.c:	cmd->delay	= 0;
+mcp2210-core.c:	cmd->mcp_status		= 0;
+mcp2210-core.c:	cmd->state		= MCP2210_STATE_NEW;
+mcp2210-core.c:	cmd->can_retry		= 0;
+mcp2210-core.c:	cmd->nonatomic		= 0;
+mcp2210-core.c:	cmd->repeat_count	= 0;
+mcp2210-core.c:	cmd->complete		= NULL;
+mcp2210-core.c:	cmd->context		= NULL;
+mcp2210-core.c:	struct mcp2210_device *dev = cmd->dev;
+mcp2210-core.c:		list_add_tail(&cmd->node, &dev->cmd_queue);
+mcp2210-core.c:		cmd->time_queued = jiffies;
+mcp2210-core.c:	dev->cur_cmd->mcp_status = mcp_status;
+mcp2210-core.c: * populates cmd->status with an appropriate error
+mcp2210-core.c:		cmd->status = -ESHUTDOWN;
+mcp2210-core.c:			cmd->status = -ESHUTDOWN;
+mcp2210-core.c:			cmd->status = status;
+mcp2210-core.c:		cmd->status = -EPROTO;
+mcp2210-core.c:		BUG_ON(!dev->cur_cmd->type);
+mcp2210-core.c:		BUG_ON(dev->cur_cmd->dev != dev);
+mcp2210-core.c:		BUG_ON(cmd->state != MCP2210_STATE_SUBMITTED);
+mcp2210-core.c:		const struct mcp2210_cmd_type *type = cmd->type;
+mcp2210-core.c:		cmd->status = ret = check_response(dev);
+mcp2210-core.c:			if (cmd->mcp_status && type->mcp_error) {
+mcp2210-core.c:					cmd->status = -EINPROGRESS;
+mcp2210-core.c:			cmd->status = ret;
+mcp2210-core.c:		cmd->state = MCP2210_STATE_COMPLETE;
+mcp2210-core.c:		cmd->state = MCP2210_STATE_DEAD;
+mcp2210-core.c:		if (unlikely(!cmd->status || cmd->status == -EINPROGRESS)) {
+mcp2210-core.c:			cmd->status = -EINVAL;
+mcp2210-core.c:		if (!cmd->can_retry)
+mcp2210-core.c:			cmd->state = MCP2210_STATE_NEW;
+mcp2210-core.c:			++cmd->repeat_count;
+mcp2210-core.c:		dev->cur_cmd->state = MCP2210_STATE_DEAD;
+mcp2210-core.c:	BUG_ON(!cmd || !cmd->dev);
+mcp2210-core.c:	dev = cmd->dev;
+mcp2210-core.c:	BUG_ON(!cmd->type || !cmd->type->submit_prepare);
+mcp2210-core.c:	ret = cmd->type->submit_prepare(cmd);
+mcp2210-core.c:	if (unlikely(cmd->state != MCP2210_STATE_NEW))
+mcp2210-core.c:		mcp2210_warn("unexpected: cmd->state is %u", cmd->state);
+mcp2210-ctl.c:	if (cmd->is_mcp_endianness != to_mcp) {
+mcp2210-ctl.c:		flip_msg(&cmd->req);
+mcp2210-ctl.c:		cmd->is_mcp_endianness = to_mcp;
+mcp2210-ctl.c:	struct mcp2210_msg *req = &cmd->req;//dev->eps[EP_OUT].buffer;
+mcp2210-ctl.c:			store_spi_settings(dev, &rep->body.spi, cmd->pin, true);
+mcp2210-ctl.c:			store_spi_settings(dev, &req->body.spi, cmd->pin, true);
+mcp2210-ctl.c:		store_spi_settings(dev, &rep->body.spi, cmd->pin, false);
+mcp2210-ctl.c:		store_spi_settings(dev, &req->body.spi, cmd->pin, false);
+mcp2210-ctl.c:	memcpy(dev->eps[EP_OUT].buffer, &cmd->req, sizeof(cmd->req));
+mcp2210-ctl.c:	mcp2210_debug("cmd->is_mcp_endianness = %hhu", cmd->is_mcp_endianness);
+mcp2210-ctl.c:	cmd->head.dev = dev;
+mcp2210-ctl.c:	cmd->head.type = &mcp2210_cmd_type_ctl;
+mcp2210-ctl.c:	mcp2210_init_msg(&cmd->req, cmd_code, subcmd_code, 0, body,
+mcp2210-ctl.c:	cmd->head.can_retry = 1;
+mcp2210-ctl.c:	cmd->pin = 0x7f;
+mcp2210-ctl.c:	cmd->is_mcp_endianness = is_mcp_endianness;
+mcp2210-ctl.c:	mcp2210_debug("pin = %hhu, is_mcp_endianness = %hhu", cmd->pin, cmd->is_mcp_endianness);
+Binary file mcp2210.ko matches
+Binary file mcp2210-spi.o matches
+Binary file mcp2210-ctl.o matches
+mcp2210-gpio.c:	switch (cmd->req.cmd) {
+mcp2210-gpio.c:	cmd->head.complete = complete_cmd_chip;
+mcp2210-gpio.c:	cmd->head.context = &c;
+mcp2210-gpio.c:	ret = mcp2210_add_cmd(&cmd->head, true);
+mcp2210-lib.c:	       ind, cmd->dev,
+mcp2210-lib.c:	       ind, cmd->type, cmd->type ? cmd->type->desc : "none",
+mcp2210-lib.c:	       ind, &cmd->node, cmd->node.next, cmd->node.prev,
+mcp2210-lib.c:	       ind, cmd->time_queued,
+mcp2210-lib.c:	       ind, cmd->time_started,
+mcp2210-lib.c:	       ind, cmd->delay_until,
+mcp2210-lib.c:	       ind, cmd->status,
+mcp2210-lib.c:	       ind, cmd->mcp_status,
+mcp2210-lib.c:	       ind, cmd->state, "",
+mcp2210-lib.c:	       ind, cmd->can_retry,
+mcp2210-lib.c:	       ind, cmd->delayed,
+mcp2210-lib.c:	       ind, cmd->nonatomic,
+mcp2210-lib.c:	       ind, cmd->repeat_count,
+mcp2210-lib.c:	       ind, cmd->complete,
+mcp2210-lib.c:	       ind, cmd->context,
+mcp2210-lib.c:	dump_mcp_msg(level, indent + 2, ".req              = ", &cmd->req, true);
+mcp2210-lib.c:	       level, ind, cmd->pin,
+mcp2210-lib.c:	       ind, cmd->is_mcp_endianness,
+mcp2210-lib.c:	dump_spi_device(level, indent + 2, ".spi = ", cmd->spi);
+mcp2210-lib.c:	dump_spi_message(level, indent + 2, ".msg = ", cmd->msg);
+mcp2210-lib.c:	dump_spi_transfer(level, indent + 2, ".xfer = ", cmd->xfer);
+mcp2210-lib.c:	       level, cmd->pos,
+mcp2210-lib.c:	       ind, cmd->pending_unacked,
+mcp2210-lib.c:	       ind, cmd->pending_bytes,
+mcp2210-lib.c:	       ind, cmd->busy_count,
+mcp2210-lib.c:	       ind, cmd->spi_in_flight);
+mcp2210-lib.c:	if (cmd->ctl_cmd)
+mcp2210-lib.c:			     &cmd->ctl_cmd->head);
+mcp2210-lib.c:	       level, ind, cmd->op,
+mcp2210-lib.c:	       ind, cmd->addr,
+mcp2210-lib.c:	       ind, cmd->zero_tail,
+mcp2210-lib.c:	       ind, cmd->size,
+mcp2210-eeprom.c:	cmd->head.can_retry = 1;
+mcp2210-eeprom.c:	cmd->op = op;
+mcp2210-eeprom.c:	cmd->addr = addr;
+mcp2210-eeprom.c:	cmd->size = size;
+mcp2210-eeprom.c:	cmd->zero_tail = 1;
+mcp2210-eeprom.c:	cmd->head.complete = complete;
+mcp2210-eeprom.c:	cmd->head.context = context;
+mcp2210-eeprom.c://	dump_cmd_eeprom(KERN_WARNING, 0, "eeprom_cmd = ", &cmd->head);
+mcp2210-eeprom.c:	ret = mcp2210_add_cmd(&cmd->head, true);
+mcp2210-eeprom.c:	const u16 end = cmd->addr + cmd->size;
+mcp2210-eeprom.c:	for (i = cmd->addr; i < end; ++i) {
+mcp2210-eeprom.c:		switch (get_eeprom_byte_status(cmd->head.dev, i)) {
+mcp2210-eeprom.c:			if (cmd->op == MCP2210_CMD_READ_EEPROM)
+mcp2210-eeprom.c:	struct mcp2210_device *dev = cmd->head.dev;
+mcp2210-eeprom.c:		cmd->head.state = MCP2210_STATE_COMPLETE;
+mcp2210-eeprom.c:	if (cmd->op == MCP2210_CMD_WRITE_EEPROM)
+mcp2210-eeprom.c:	mcp2210_init_msg(dev->eps[EP_OUT].buffer, cmd->op, addr, value, NULL,
+mcp2210-eeprom.c:			 0, cmd->zero_tail);
+mcp2210-eeprom.c:	cmd->zero_tail = 0;
+mcp2210-eeprom.c:	struct mcp2210_device *dev = cmd->head.dev;

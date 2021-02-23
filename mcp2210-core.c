@@ -1911,8 +1911,8 @@ static void complete_urb(struct urb *urb)
 			if (cmd->mcp_status && type->mcp_error) {
 				ret = type->mcp_error(cmd);
 				if (ret == -EAGAIN) {
-					mcp2210_warn("ignoring mcp_status "
-						     "error and repeating");
+					//mcp2210_warn("ignoring mcp_status "
+					//	     "error and repeating");
 					dev->eps[EP_OUT].retry_count = 0;
 					dev->eps[EP_IN].retry_count = 0;
 					cmd->status = -EINPROGRESS;

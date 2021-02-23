@@ -858,7 +858,7 @@ static int spi_mcp_error(struct mcp2210_cmd *cmd_head)
 	cmd->pending_unacked = 0;
 
 	if (cmd->head.mcp_status == MCP2210_STATUS_BUSY) {
-		mcp2210_warn("cmd->busy_count %u\n", cmd->busy_count);
+		//mcp2210_warn("cmd->busy_count %u\n", cmd->busy_count);
 
 		++cmd->busy_count;
 		if (cmd->busy_count < 64) {
